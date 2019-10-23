@@ -10,6 +10,9 @@ public:
   void setTuning(double kp_in, double ki_in, double kd_in);
   void setComputePeriod(int p);
   void setOutputContraints(double min, double max);
+  double getKp(); //return the current Kp constant
+  double getKi(); //return the current Ki constant
+  double getKd(); //return the current Kd constant
 
 private:
   double kp, ki, kd;

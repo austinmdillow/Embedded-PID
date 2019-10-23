@@ -71,3 +71,15 @@ void PID_Em::printTuning() {
     Serial.print("Kd = ");
     Serial.println(kd);
 }
+
+double PID_Em::getKp() {
+    return kp;
+}
+
+double PID_Em::getKi() {
+    return ki;
+}
+
+double PID_Em::getKd() {
+    return kd;
+}
