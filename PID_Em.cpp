@@ -6,6 +6,8 @@
 
 #include <PID_Em.h>
 
+// TODO add error checking 
+
 void PID_Em::PID(float* input, float* output, float* setpoint_in, double kp_in, double ki_in, double kd_in) {
     last_compute = millis();
     setTuning(kp_in, ki_in, kd_in);
@@ -57,6 +59,8 @@ void PID_Em::setOutputContraints(double min, double max) {
 void PID_Em::newSetpoint(double setpoint_in) {
     setpoint = setpoint_in;
     last_compute = millis();
+    // TODO alleviate problems of high derrivative controller
+    integral_sum = 0; // reset the integral controller
 }
 
 void PID_Em::printTuning() {
