@@ -18,6 +18,7 @@ void PID_Em::compute() {
     double dt = millis() - last_compute;
     if (dt >= compute_period) {
         // do the computation
+        dt = dt / 1000; // convert delta T to seconds
         double error = setpoint - *pidInput;
         integral_sum += error * dt;
         double derrivative = (error - last_error) / dt;
