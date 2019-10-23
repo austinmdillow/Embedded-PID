@@ -9,20 +9,31 @@
 void PID_Em::PID(float* input, float* output, float* setpoint_in, double kp_in, double ki_in, double kd_in) {
     last_compute = millis();
     setTuning(kp_in, ki_in, kd_in);
+    setOutputContraints(0, 255); // limits of Arduino DAC
 }
 
 void PID_Em::compute() {
-    float dt = millis() - last_compute;
+    double dt = millis() - last_compute;
     if (dt >= compute_period) {
         // do the computation
         double error = setpoint - *pidInput;
         integral_sum += error * dt;
-        double result = error * kp + integral_sum * ki + (error - last_error);
+        double derrivative = (error - last_error) / dt;
+        double result = error * kp + integral_sum * ki + derrivative * kd;
 
-        last_input = *pidInput;
+
+        // Check that the result is within the give contraints
+        if (result > maxOut) {
+            result = maxOut;
+        } else if (result < minOut) {
+            result = minOut;
+        }
+
+        *pidOutput = result;
+
         last_error = error;
         last_compute = millis();
-        *pidOutput = result;
+        
     }
 }
 
@@ -36,6 +47,11 @@ void PID_Em::setComputePeriod(int p) { ///< Period in ms between computes
     if (p > 0) {
         compute_period = p;
     }
+}
+
+void PID_Em::setOutputContraints(double min, double max) {
+    minOut = min;
+    maxOut = max;
 }
 
 void PID_Em::newSetpoint(double setpoint_in) {

@@ -5,10 +5,11 @@ class PID_Em {
 public:
   void PID(float *input, float *output, float *setpoint_in, double kp_in, double ki_in, double kd_in);
   void compute();
-  void setTuning(double kp_in, double ki_in, double kd_in);
   void printTuning();
   void newSetpoint(double setpoint_in);
+  void setTuning(double kp_in, double ki_in, double kd_in);
   void setComputePeriod(int p);
+  void setOutputContraints(double min, double max);
 
 private:
   double kp, ki, kd;
@@ -19,6 +20,7 @@ private:
   unsigned long last_compute;
   double *pidInput;
   double *pidOutput;
+  double maxOut, minOut;
 };
 
 #endif
