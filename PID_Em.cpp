@@ -9,10 +9,13 @@
 
 // TODO add error checking 
 
-PID_Em::PID_Em(double* input, double* output, double* setpoint_in, double kp_in, double ki_in, double kd_in) {
+PID_Em::PID_Em(float* input, float* output, float setpoint_in, float kp_in, float ki_in, float kd_in) {
     last_compute = millis();
     setTuning(kp_in, ki_in, kd_in);
     setOutputContraints(0, 255); // limits of Arduino DAC
+    pidInput = input;
+    pidOutput = output;
+    setpoint = setpoint_in;
 }
 
 /**
@@ -20,14 +23,14 @@ PID_Em::PID_Em(double* input, double* output, double* setpoint_in, double kp_in,
  * This should be called in a loop and more frequently than the update period
  */
 void PID_Em::compute() {
-    double dt = millis() - last_compute;
+    float dt = millis() - last_compute;
     if (dt >= compute_period) {
         if (dt >= 1.5 * compute_period) {
             error_codes = PID_Stall;
         }
         // do the computation
         dt = dt / 1000; // convert delta T to seconds
-        double error = setpoint - *pidInput;
+        float error = setpoint - *pidInput;
         
         // checks for integral windup
         if (anti_windup) {
@@ -44,8 +47,8 @@ void PID_Em::compute() {
         }
 
         integral_sum += error * dt;
-        double derrivative = (error - last_error) / dt;
-        double result = error * kp + integral_sum * ki + derrivative * kd;
+        float derrivative = (error - last_error) / dt;
+        float result = error * kp + integral_sum * ki + derrivative * kd;
 
         // Check that the result is within the give contraints
         if (result > maxOut) {
@@ -53,15 +56,15 @@ void PID_Em::compute() {
         } else if (result < minOut) {
             result = minOut;
         }
+       
 
         *pidOutput = result;
         last_error = error;
         last_compute = millis();
-        
     }
 }
 
-void PID_Em::setTuning(double kp_in, double ki_in, double kd_in) {
+void PID_Em::setTuning(float kp_in, float ki_in, float kd_in) {
     kp = kp_in;
     ki = ki_in;
     kd = kd_in;
@@ -82,7 +85,7 @@ void PID_Em::setComputePeriod(int p) { ///< Period in ms between computes
  * @param min the lower bound
  * @param max the upper bound
  */
-void PID_Em::setOutputContraints(double min, double max) {
+void PID_Em::setOutputContraints(float min, float max) {
     minOut = min;
     maxOut = max;
 }
@@ -92,7 +95,7 @@ void PID_Em::setOutputContraints(double min, double max) {
  * @param maxIntegral how large the integral part can become in the output range
  * @param integrationDomain how far (either side of the setpoint) the integration component will continue to add
  */
-void PID_Em::setIntegralWindup(double maxIntegral, double integrationDomain) {
+void PID_Em::setIntegralWindup(float maxIntegral, float integrationDomain) {
     integral_max = maxIntegral;
     integral_domain = integrationDomain;
     anti_windup = true;
@@ -102,7 +105,7 @@ void PID_Em::resetIntegralWindup() {
     anti_windup = false;
 }
 
-void PID_Em::newSetpoint(double setpoint_in) {
+void PID_Em::newSetpoint(float setpoint_in) {
     if (setpoint != setpoint_in) { // if there is no change, do nothing
         setpoint = setpoint_in;
         last_compute = millis();
@@ -120,14 +123,14 @@ void PID_Em::printTuning() {
     Serial.println(kd);
 }
 
-double PID_Em::getKp() {
+float PID_Em::getKp() {
     return kp;
 }
 
-double PID_Em::getKi() {
+float PID_Em::getKi() {
     return ki;
 }
 
-double PID_Em::getKd() {
+float PID_Em::getKd() {
     return kd;
 }

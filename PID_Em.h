@@ -3,18 +3,18 @@
 
 class PID_Em {
 public:
-  PID_Em(double* input, double* output, double* setpoint_in, double kp_in, double ki_in, double kd_in);
+  PID_Em(float* input, float* output, float setpoint_in, float kp_in, float ki_in, float kd_in);
   void compute();
   void printTuning();
-  void newSetpoint(double setpoint_in);
-  void setTuning(double kp_in, double ki_in, double kd_in);
-  void setIntegralWindup(double maxIntegral, double integrationDomain);
+  void newSetpoint(float setpoint_in);
+  void setTuning(float kp_in, float ki_in, float kd_in);
+  void setIntegralWindup(float maxIntegral, float integrationDomain);
   void resetIntegralWindup();
   void setComputePeriod(int p);
-  void setOutputContraints(double min, double max);
-  double getKp(); //return the current Kp constant
-  double getKi(); //return the current Ki constant
-  double getKd(); //return the current Kd constant
+  void setOutputContraints(float min, float max);
+  float getKp(); //return the current Kp constant
+  float getKi(); //return the current Ki constant
+  float getKd(); //return the current Kd constant
 
   enum Errors {
     PID_Stall
@@ -23,16 +23,16 @@ public:
 private:
   
   Errors error_codes;
-  double kp, ki, kd;
-  double setpoint;
+  float kp, ki, kd;
+  float setpoint;
   bool anti_windup = false; // controls if we implement integral anti-windup tactics
-  double integral_sum, integral_domain, integral_max; // store the integral portion of the controller
+  float integral_sum, integral_domain, integral_max; // store the integral portion of the controller
   int compute_period = 50; // how often the PID controller computes (if called more frequently)
-  double last_input, last_output, last_error;
+  float last_input, last_output, last_error;
   unsigned long last_compute;
-  double *pidInput;
-  double *pidOutput;
-  double maxOut, minOut;
+  float *pidInput;
+  float *pidOutput;
+  float maxOut, minOut;
 };
 
 #endif
